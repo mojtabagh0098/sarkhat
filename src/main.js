@@ -15,6 +15,8 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 // Plugins
 import { registerPlugins } from '@/plugins'
 
+import router from '@/router'
+
 const pinia = createPinia()
 const app = createApp(App)
 
@@ -22,4 +24,5 @@ registerPlugins(app)
 
 pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
+app.use(router)
 app.mount('#app')

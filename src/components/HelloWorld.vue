@@ -1,71 +1,120 @@
 <template>
   <v-container class="fill-height">
     <v-responsive class="d-flex align-center text-center fill-height">
-      <v-row class="d-flex align-center justify-center">
-        <!-- <v-sheet width="180" class="mx-auto"> -->
-            <!-- <v-form @submit.prevent> -->
-                <v-col cols="2">
+      <v-row>
+        <img src="@/assets/logo1.png" style="width: 250px;margin: 0 auto;">
+      </v-row>
+      <v-row class="d-flex">
+        <v-col cols="6">
+            <v-row>
+                <v-col cols="6">
+                    <h3>Bot Settings</h3>
+                </v-col>
+                <v-col cols="6">
+                    <h3>
+                        Order Settings
+                    </h3>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="6">
                     <v-text-field
                         v-model="startTime"
                         :rules="rules"
                         label="Start Time"
                     ></v-text-field>
                 </v-col>
-                <v-col cols="2">
+                <v-col cols="6">
+                    <v-autocomplete
+                        v-model="inputs.symbol.select"
+                        v-model:search="search"
+                        :rules="inputs.symbol.rules"
+                        :loading="inputs.symbol.loading"
+                        :items="inputs.symbol.items"
+                        item-title="label"
+                        item-value="isin"
+                        density="comfortable"
+                        hide-no-data
+                        hide-details
+                        label="Symbol"
+                        style="max-width: 300px;"
+                    ></v-autocomplete>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="6">
                     <v-text-field
                         v-model="endTime"
                         :rules="rules"
                         label="End Time"
                     ></v-text-field>
                 </v-col>
-                <v-col cols="2">
+                <v-col cols="6">
+                    <v-text-field
+                        v-model="size"
+                        :rules="inputs.size.rules"
+                        label="Size"
+                    ></v-text-field>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="6">
                     <v-text-field
                         v-model="delay"
-                        model-value="350"
                         :rules="rules"
                         label="Delay Time (mili seconds)"
                     ></v-text-field>
                 </v-col>
-                <v-col cols="1">
-                    <v-row class="d-flex align-center justify-center">
-                        <v-btn class="w-100" variant="flat" color="red" size="small" prepend-icon="mdi-stop" v-on:click="stop" :disabled="!this.botStatus" >Stop</v-btn>
-                        <v-btn class="w-100 mt-3" variant="flat" color="green" size="small" prepend-icon="mdi-play" v-on:click="start" :disabled="this.botStatus" >Start</v-btn>
-                    </v-row>
+                <v-col cols="6">
+                    <v-text-field
+                        v-model="price"
+                        :rules="inputs.price.rules"
+                        label="Price"
+                    ></v-text-field>
                 </v-col>
+            </v-row>
             
-            <!-- </v-form> -->
-        <!-- </v-sheet> -->
-      </v-row>
-      <v-row class="d-flex align-center justify-center mt-10">
-            <v-table height="300px">
+            <div>
+                <v-btn variant="flat" color="red" size="small" prepend-icon="mdi-stop" v-on:click="stop" :disabled="!this.botStatus" >Stop</v-btn>
+                <v-btn class="ml-2" variant="flat" color="green" size="small" prepend-icon="mdi-play" v-on:click="start" :disabled="this.botStatus" >Start</v-btn>
+            </div>
+        </v-col>
+        <v-col cols="6">
+            <v-row>
+                <v-col>
+                    <h3>Bot Settings</h3>
+                </v-col>
+            </v-row>
+            <v-table height="300px" fixed-header>
                 <thead>
-                <tr>
-                    <th class="text-right">
-                    #
-                    </th>
-                    <th class="text-right">
-                    Time
-                    </th>
-                    <th class="text-right">
-                    Status
-                    </th>
-                    <th class="text-right">
-                    Message
-                    </th>
-                </tr>
+                    <tr>
+                        <th class="text-right">
+                        #
+                        </th>
+                        <th class="text-right">
+                        Time
+                        </th>
+                        <th class="text-right">
+                        Status
+                        </th>
+                        <th class="text-right">
+                        Message
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr
-                    v-for="(item, index) in items"
-                    :key="item.name"
-                >
-                    <td>{{ index }}</td>
-                    <td>{{ new Date(item.time).getHours() }}:{{ new Date(item.time).getMinutes() }}:{{ new Date(item.time).getSeconds() }}:{{ new Date(item.time).getMilliseconds() }}</td>
-                    <td><v-chip variant="elevated" :color="(item.status) ? 'green': 'red'">{{ (item.status) ? 'Success': 'Failed' }}</v-chip></td>
-                    <td>{{ item.message }}</td>
-                </tr>
+                    <tr
+                        v-for="(item, index) in items"
+                        :key="item.name"
+                    >
+                        <td>{{ index }}</td>
+                        <td>{{ new Date(item.time).getHours() }}:{{ new Date(item.time).getMinutes() }}:{{ new Date(item.time).getSeconds() }}:{{ new Date(item.time).getMilliseconds() }}</td>
+                        <td><v-chip variant="elevated" :color="(item.status) ? 'green': 'red'">{{ (item.status) ? 'Success': 'Failed' }}</v-chip></td>
+                        <td>{{ item.message }}</td>
+                    </tr>
                 </tbody>
             </v-table>
+        </v-col>
       </v-row>
     </v-responsive>
     <v-snackbar
@@ -138,9 +187,50 @@ const cookie = useCookieStore()
           return 'You must enter a first name.'
         },
       ],
-      delay: 350,
-      startTime: new Date().toLocaleString("en-GB",{hour: 'numeric', minute: 'numeric', second: 'numeric'}),
-      endTime: new Date().toLocaleString("en-GB",{hour: 'numeric', minute: 'numeric', second: 'numeric'}),
+      search: null,
+      inputs: {
+        symbol: {
+            items: [],
+            loading: false,
+            search: null,
+            select: null,
+            
+        },
+        size: {
+            rules: [
+                value => {
+                if ( value > 0 ) return true
+
+                return 'You must enter a number greater than 0.'
+                },
+            ]
+        },
+        price: {
+            rules: [
+                value => {
+                if ( value > 0 ) return true
+
+                return 'You must enter a valid price.'
+                },
+            ]
+        },
+        delay: {
+            rules: [
+                value => {
+                if ( value > 0) return true
+
+                return 'You must enter a number greater than 0.'
+                },
+            ]
+        }
+      },
+      delay: 10,
+      startTime: "08:44:50",
+      endTime: "08:45:05",
+      symbol: "",
+      isin: 0,
+      size: 0,
+      price: 0,
       timerId: null,
       botStatus: false,
       snackbar: {
@@ -191,7 +281,7 @@ const cookie = useCookieStore()
                             clearInterval( this.timerId );
                             this.botStatus = false
                         }
-                    },300)
+                    },this.delay)
                 },start.getTime() - now)
                 
             }
@@ -217,7 +307,7 @@ const cookie = useCookieStore()
                     "Cache-Control": "no-cache"
                 },
                 "referrer": "https://online.oibourse.ir/",
-                "body": "{\"IsSymbolCautionAgreement\":false,\"CautionAgreementSelected\":false,\"IsSymbolSepahAgreement\":false,\"SepahAgreementSelected\":false,\"orderCount\":1600,\"orderPrice\":16040,\"FinancialProviderId\":1,\"minimumQuantity\":0,\"maxShow\":0,\"orderId\":0,\"isin\":\"IRO1PYPD0001\",\"orderSide\":65,\"orderValidity\":74,\"orderValiditydate\":null,\"shortSellIsEnabled\":false,\"shortSellIncentivePercent\":0}",
+                "body": "{\"IsSymbolCautionAgreement\":false,\"CautionAgreementSelected\":false,\"IsSymbolSepahAgreement\":false,\"SepahAgreementSelected\":false,\"orderCount\":"+this.size+",\"orderPrice\":"+this.price+",\"FinancialProviderId\":1,\"minimumQuantity\":0,\"maxShow\":0,\"orderId\":0,\"isin\":\""+this.size+"\",\"orderSide\":65,\"orderValidity\":74,\"orderValiditydate\":null,\"shortSellIsEnabled\":false,\"shortSellIncentivePercent\":0}",
                 "method": "POST",
                 "mode": "cors"
             }).then(response => response.json())
@@ -228,7 +318,38 @@ const cookie = useCookieStore()
                     message: response.MessageDesc
                 })
             })
-        }
+        },
+        async querySelections (v) {
+            if (v.length > 2) {
+                this.inputs.symbol.loading = true
+                this.inputs.symbol.items = []
+                await fetch(`/V1/Symbol/GetSymbol?term=${v}`, {
+                    "credentials": "include",
+                    "headers": {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/111.0",
+                        "Accept": "*/*",
+                        "Accept-Language": "en-US,en;q=0.5",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Authorization": "BasicAuthentication " + cookie.authentication,
+                        "Sec-Fetch-Dest": "empty",
+                        "Sec-Fetch-Mode": "cors",
+                        "Sec-Fetch-Site": "same-site",
+                        "Pragma": "no-cache",
+                        "Cache-Control": "no-cache"
+                    },
+                    "referrer": "https://online.oibourse.ir/",
+                    "method": "GET",
+                    "mode": "cors"
+                }).then(res => res.json())
+                .then(res => {
+                    res.forEach(element => {
+                        this.inputs.symbol.items.push(element)
+                    });
+                    console.log(this.inputs.symbol.select);
+                    this.inputs.symbol.loading = false
+                })
+            }
+        },
     },
     computed: {
       virtualDesserts () {
@@ -248,8 +369,8 @@ const cookie = useCookieStore()
             this.setTime(this.getTime() + (m*60*1000));
             return this;
         }
-        this.startTime = new Date().addMins(0.5).toLocaleString("en-GB",{hour: 'numeric', minute: 'numeric', second: 'numeric'})
-        this.endTime = new Date().addMins(1).toLocaleString("en-GB",{hour: 'numeric', minute: 'numeric', second: 'numeric'})
+        this.startTime = "08:44:50"
+        this.endTime = "08:45:05"
         await fetch("/V1/Accounting/Remain", {
             "credentials": "include",
             "headers": {
@@ -270,12 +391,23 @@ const cookie = useCookieStore()
             "Host": "https://online.oibourse.ir/",
             "Origin": "https://online.oibourse.ir/",
             "mode": "cors"
-        }).then(response => response.json())
-        .then(response => {
-            if (!response.IsSuccessfull) {
-                router.push("/login")
-            }
         })
+        .then(async response => {
+            if (response.ok) {
+                let res = await response.json()
+                if (!res.IsSuccessfull) {
+                    this.$router.push("/login")
+                }
+            }
+        }).catch(err => {
+            this.$router.push("/login")
+        })
+    },
+    watch: {
+      search (val) {
+        val && val !== this.inputs.symbol.select && this.querySelections(val)
+        // this.querySelections(val)
+      },
     },
   }
 </script>

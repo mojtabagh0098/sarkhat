@@ -49,9 +49,7 @@ router.beforeEach((to,from,next) => {
   // ✅ This will work because the router starts its navigation after
   // the router is installed and pinia will be installed too
   const cookie = useCookieStore()
-    
   if (to.meta.requiresAuth && !cookie.logged){ 
-    console.log(to.meta.requiresAuth);
     next ({
       path: 'login',
       // save the location we were at to come back later
