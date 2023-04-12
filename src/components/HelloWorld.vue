@@ -396,11 +396,11 @@ const cookie = useCookieStore()
             if (response.ok) {
                 let res = await response.json()
                 if (!res.IsSuccessfull) {
-                    this.$router.push("/login")
+                    this.$router.push("/sarkhat/login")
                 }
             }
         }).catch(err => {
-            this.$router.push("/login")
+            this.$router.push("/sarkhat/login")
         })
     },
     watch: {

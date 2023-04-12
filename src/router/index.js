@@ -10,7 +10,7 @@ const routes = [
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
-        path: '/',
+        path: '/sarkhat/',
         name: 'Home',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
@@ -20,7 +20,7 @@ const routes = [
 
       },
       {
-        path: '/login',
+        path: '/sarkhat/login',
         name: 'Login',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

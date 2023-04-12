@@ -89,7 +89,7 @@ export default {
                     if (response.IsSuccessfull) {
                         this.loading = false
                         // cookie.login(this.cookie,authentication)
-                        this.$router.push("/")
+                        this.$router.push("/sarkhat/")
                     }
                 })
             } else {
